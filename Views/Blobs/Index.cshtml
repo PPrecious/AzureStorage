@@ -1,0 +1,200 @@
+﻿@model List<BlobItemViewModel>
+
+
+<div class="d-flex justify-content-between
+    align-items-center mb-3">
+
+    <div>
+
+        <h2 class="mb-1">
+            Azure Blob Storage
+        </h2>
+
+        <p class="text-muted mb-0">
+
+            Container:
+            productmedia
+
+        </p>
+
+    </div>
+
+
+    <span class="badge text-bg-primary">
+
+        @Model.Count blobs
+
+    </span>
+
+</div>
+
+
+<div class="card p-3 mb-4 shadow-sm">
+
+    <h5>
+        Upload Image or Multimedia
+    </h5>
+
+
+    <form asp-action="Upload"
+          method="post"
+          enctype="multipart/form-data"
+          class="row g-2">
+
+        @Html.AntiForgeryToken()
+
+
+        <div class="col-md-9">
+
+            <input type="file"
+                   name="file"
+                   class="form-control"
+                   accept="image/*,video/*,audio/*"
+                   required />
+
+
+            <div class="form-text">
+
+                Maximum file size:
+                20 MB.
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <button type="submit"
+                    class="btn btn-primary w-100">
+
+                Upload Multimedia
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<div class="row g-4">
+
+    @foreach (var blob in Model)
+    {
+        <div class="col-md-4">
+
+            <div class="card h-100 shadow-sm">
+
+
+                @if (blob.IsImage)
+                {
+                    <img src="@Url.Action(
+                                                                 "ViewBlob",
+                                                                 "Blobs",
+                                                                 new { name = blob.Name })"
+                         class="card-img-top media-preview"
+                         alt="@blob.Name" />
+                }
+
+
+                else if (blob.IsVideo)
+                {
+                    <video class="card-img-top media-preview"
+                           controls>
+
+                        <source src="@Url.Action(
+                                                                                "ViewBlob",
+                                                                                "Blobs",
+                                                                                new { name = blob.Name })"
+                                type="@blob.ContentType" />
+
+                        Your browser does not
+                        support video playback.
+
+                    </video>
+                }
+
+
+                else if (blob.IsAudio)
+                {
+                    <div class="p-4 bg-light">
+
+                        <audio controls
+                               class="w-100">
+
+                            <source src="@Url.Action(
+                                                                                            "ViewBlob",
+                                                                                            "Blobs",
+                                                                                            new { name = blob.Name })"
+                                    type="@blob.ContentType" />
+
+                        </audio>
+
+                    </div>
+                }
+
+
+                else
+                {
+                    <div class="placeholder-media">
+
+                        Multimedia file
+
+                    </div>
+                }
+
+
+                <div class="card-body">
+
+                    <h6 class="text-break">
+
+                        @blob.Name
+
+                    </h6>
+
+
+                    <p class="small text-muted mb-3">
+
+                        @blob.ContentType
+                        ·
+                        @blob.Size bytes
+
+                    </p>
+
+
+                    <a class="btn btn-sm
+                        btn-outline-primary"
+                           href="@Url.Action(
+                                                                    "ViewBlob",
+                                                                    "Blobs",
+                                                                    new { name = blob.Name })"
+                           target="_blank"
+                           rel="noopener">
+
+                        View / Open
+
+                    </a>
+
+                </div>
+
+            </div>
+        </div>
+    }
+
+
+    @if (Model.Count == 0)
+    {
+        <div class="col-12">
+
+            <div class="alert alert-secondary">
+
+                No blobs stored yet.
+
+            </div>
+
+        </div>
+    }
+
+</div>
